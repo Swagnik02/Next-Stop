@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:next_stop/features/arrival/view/arrival_screen.dart';
+import 'package:next_stop/app/router.dart';
 
 class NextStopApp extends StatelessWidget {
   const NextStopApp({super.key});
@@ -27,7 +27,7 @@ class NextStopApp extends StatelessWidget {
       // Follow system theme
       themeMode: ThemeMode.system,
 
-      home: const ArrivalScreen(),
+      home: const RootScreen(),
     );
   }
 }
