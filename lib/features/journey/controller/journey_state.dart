@@ -1,16 +1,16 @@
-import 'package:geolocator/geolocator.dart';
+import 'package:next_stop/core/models/location_data.dart';
 import 'package:next_stop/features/journey/models/trip_model.dart';
 
 class JourneyState {
   final bool tracking;
-  final Position? currentPosition;
+  final LocationData? currentLocation;
   final Trip? trip;
   final double? distance;
   final List<Trip> savedTrips;
 
   const JourneyState({
     required this.tracking,
-    this.currentPosition,
+    this.currentLocation,
     this.trip,
     this.distance,
     this.savedTrips = const [],
@@ -18,7 +18,7 @@ class JourneyState {
 
   JourneyState copyWith({
     bool? tracking,
-    Position? currentPosition,
+    LocationData? currentLocation,
     Trip? trip,
     double? distance,
     List<Trip>? savedTrips,
@@ -27,7 +27,7 @@ class JourneyState {
   }) {
     return JourneyState(
       tracking: tracking ?? this.tracking,
-      currentPosition: currentPosition ?? this.currentPosition,
+      currentLocation: currentLocation ?? this.currentLocation,
       trip: clearTrip ? null : (trip ?? this.trip),
       distance: clearDistance ? null : (distance ?? this.distance),
       savedTrips: savedTrips ?? this.savedTrips,

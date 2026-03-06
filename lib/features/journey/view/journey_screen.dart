@@ -51,7 +51,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
     final state = ref.watch(journeyProvider);
     final controller = ref.read(journeyProvider.notifier);
 
-    final position = state.currentPosition;
+    final currentLocation = state.currentLocation;
     final activeTrip = state.trip;
     final distance = state.distance;
     final savedTrips = state.savedTrips;
@@ -81,7 +81,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                       final point = await showWaypointPicker(
                         context,
                         WaypointType.origin,
-                        state.currentPosition,
+                        currentLocation,
                       );
                       if (point != null) setState(() => origin = point);
                     },
@@ -89,7 +89,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                       final point = await showWaypointPicker(
                         context,
                         WaypointType.destination,
-                        state.currentPosition,
+                        currentLocation,
                       );
                       if (point != null) setState(() => destination = point);
                     },
@@ -105,7 +105,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                   )
                 : ActiveTripCard(
                     distance: distance,
-                    position: position,
+                    location: currentLocation,
                     onStop: controller.stopTrip,
                   ),
 

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:next_stop/core/models/location_data.dart';
 
 class ActiveTripCard extends StatelessWidget {
   final double? distance;
-  final Position? position;
+  final LocationData? location;
   final VoidCallback onStop;
 
   const ActiveTripCard({
     super.key,
     required this.distance,
-    required this.position,
+    required this.location,
     required this.onStop,
   });
 
@@ -40,9 +40,9 @@ class ActiveTripCard extends StatelessWidget {
               const SizedBox(height: 10),
 
               Text(
-                position == null
+                location == null
                     ? "--"
-                    : "${position!.speed.toStringAsFixed(1)} m/s",
+                    : "${location!.speed.toStringAsFixed(1)} m/s",
               ),
             ],
           ),

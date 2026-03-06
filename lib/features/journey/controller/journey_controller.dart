@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:next_stop/core/models/location_data.dart';
+import 'package:next_stop/core/services/location_service.dart';
 import 'package:next_stop/features/journey/controller/journey_state.dart';
 import 'package:next_stop/features/journey/models/trip_model.dart';
 import 'package:next_stop/features/journey/models/waypoint_model.dart';
@@ -33,87 +34,94 @@ class JourneyController extends StateNotifier<JourneyState> {
                 type: WaypointType.destination,
               ),
             ),
+            Trip(
+              id: "test2",
+              name: "DTDC",
+              origin: Waypoint(
+                latitude: 12.8431656,
+                longitude: 77.635666,
+                name: "PG",
+                type: WaypointType.origin,
+              ),
+              destination: Waypoint(
+                latitude: 12.8405525,
+                longitude: 77.6493959,
+                name: "DTDC",
+                type: WaypointType.destination,
+              ),
+            ),
           ],
         ),
       );
 
-  StreamSubscription<Position>? _positionStream;
+  final LocationService _locationService = LocationService();
 
-  /// FETCH CURRENT LOCATION ONCE
+  StreamSubscription<LocationData>? _locationStream;
+
+  /// FETCH CURRENT LOCATION
   Future<void> fetchCurrentLocation() async {
-    final position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
+    final location = await _locationService.getCurrentLocation();
 
-    state = state.copyWith(currentPosition: position);
+    state = state.copyWith(currentLocation: location);
   }
 
-  /// START GPS TRACKING
+  /// START TRACKING
   void startTracking() async {
-    await _positionStream?.cancel();
+    await _locationStream?.cancel();
 
-    const locationSettings = LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 3,
+    _locationStream = _locationService.getLocationStream().listen(
+      _onLocationUpdate,
     );
-
-    _positionStream = Geolocator.getPositionStream(
-      locationSettings: locationSettings,
-    ).listen(_onLocationUpdate);
   }
 
-  void _onLocationUpdate(Position position) {
+  void _onLocationUpdate(LocationData location) {
     double? distance;
 
     if (state.trip?.destination != null) {
-      distance = Geolocator.distanceBetween(
-        position.latitude,
-        position.longitude,
+      distance = _locationService.calculateDistance(
+        location.latitude,
+        location.longitude,
         state.trip!.destination!.latitude,
         state.trip!.destination!.longitude,
       );
     }
 
     final origin = Waypoint(
-      latitude: position.latitude,
-      longitude: position.longitude,
+      latitude: location.latitude,
+      longitude: location.longitude,
       type: WaypointType.origin,
       name: "Current Location",
     );
 
     state = state.copyWith(
       tracking: true,
-      currentPosition: position,
+      currentLocation: location,
       distance: distance,
       trip: state.trip?.copyWith(origin: origin),
     );
   }
 
-  /// STOP GPS
   void stopTracking() async {
-    await _positionStream?.cancel();
-    _positionStream = null;
+    await _locationStream?.cancel();
+    _locationStream = null;
 
     state = state.copyWith(
       tracking: false,
-      currentPosition: null,
+      currentLocation: null,
       clearDistance: true,
     );
   }
 
-  /// SAVE trip
   void saveTrip(Trip trip) {
     final updated = [...state.savedTrips, trip];
     state = state.copyWith(savedTrips: updated);
   }
 
-  /// START trip
   void startTrip(Trip trip) {
     state = state.copyWith(trip: trip);
     startTracking();
   }
 
-  /// STOP trip
   void stopTrip() {
     stopTracking();
 
@@ -126,7 +134,7 @@ class JourneyController extends StateNotifier<JourneyState> {
 
   @override
   void dispose() {
-    _positionStream?.cancel();
+    _locationStream?.cancel();
     super.dispose();
   }
 }
