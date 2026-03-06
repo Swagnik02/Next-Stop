@@ -106,11 +106,15 @@ class _ArrivalScreenState extends ConsumerState<ArrivalScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final position = ref.watch(arrivalProvider);
+    final state = ref.watch(arrivalProvider);
     final controller = ref.read(arrivalProvider.notifier);
 
+    final position = state.currentPosition;
+    final activeTrip = state.trip;
+    final distance = state.distance;
+    final savedTrips = state.savedTrips;
+
     final isTracking = position != null;
-    final activeTrip = controller.activeTrip;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Next Stop"), centerTitle: true),
@@ -173,8 +177,7 @@ class _ArrivalScreenState extends ConsumerState<ArrivalScreen> {
                               final trip = Trip(
                                 id: DateTime.now().millisecondsSinceEpoch
                                     .toString(),
-                                name:
-                                    "Trip ${controller.savedTrips.length + 1}",
+                                name: "Trip ${savedTrips.length + 1}",
                                 origin: origin,
                                 destination: destination,
                               );
@@ -216,9 +219,9 @@ class _ArrivalScreenState extends ConsumerState<ArrivalScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      controller.distance == null
+                      distance == null
                           ? "--"
-                          : "${(controller.distance! / 1000).toStringAsFixed(2)} km",
+                          : "${(distance / 1000).toStringAsFixed(2)} km",
                       style: const TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
@@ -246,9 +249,9 @@ class _ArrivalScreenState extends ConsumerState<ArrivalScreen> {
 
             Expanded(
               child: ListView.builder(
-                itemCount: controller.savedTrips.length,
+                itemCount: savedTrips.length,
                 itemBuilder: (context, index) {
-                  final trip = controller.savedTrips[index];
+                  final trip = savedTrips[index];
 
                   return Card(
                     child: ListTile(

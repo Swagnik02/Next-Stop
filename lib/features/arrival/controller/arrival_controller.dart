@@ -1,46 +1,45 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:next_stop/features/arrival/models/location_point_model.dart';
-import 'package:next_stop/features/arrival/models/location_point_type_enum.dart';
-import 'package:next_stop/features/arrival/models/trip_model.dart';
+import '../models/arrival_state.dart';
+import '../models/location_point_model.dart';
+import '../models/location_point_type_enum.dart';
+import '../models/trip_model.dart';
 
-final arrivalProvider = StateNotifierProvider<ArrivalController, Position?>(
+final arrivalProvider = StateNotifierProvider<ArrivalController, ArrivalState>(
   (ref) => ArrivalController(),
 );
 
-class ArrivalController extends StateNotifier<Position?> {
-  ArrivalController() : super(null);
+class ArrivalController extends StateNotifier<ArrivalState> {
+  ArrivalController()
+    : super(
+        ArrivalState(
+          tracking: false,
+          savedTrips: [
+            Trip(
+              id: "test1",
+              name: "test1",
+              origin: LocationPoint(
+                latitude: 12.8431656,
+                longitude: 77.635666,
+                name: "PG",
+                type: LocationPointType.origin,
+              ),
+              destination: LocationPoint(
+                latitude: 12.8401781,
+                longitude: 77.6482086,
+                name: "Barbeque Nation",
+                type: LocationPointType.destination,
+              ),
+            ),
+          ],
+        ),
+      );
 
   StreamSubscription<Position>? _positionStream;
 
-  List<Trip> savedTrips = [
-    Trip(
-      id: "test1",
-      name: "test1",
-      origin: LocationPoint(
-        latitude: 12.8431656,
-        longitude: 77.635666,
-        name: "PG",
-        type: LocationPointType.origin,
-      ),
-      destination: LocationPoint(
-        latitude: 12.8401781,
-        longitude: 77.6482086,
-        name: "Barbeque Nation",
-        type: LocationPointType.destination,
-      ),
-    ),
-  ];
-
-  Trip? activeTrip;
-
-  double? distance;
-
-  void _notify() {
-    state = state;
-  }
-
+  /// START GPS
   void startTracking() async {
     await _positionStream?.cancel();
 
@@ -48,61 +47,73 @@ class ArrivalController extends StateNotifier<Position?> {
       accuracy: LocationAccuracy.high,
       distanceFilter: 3,
     );
-    _positionStream =
-        Geolocator.getPositionStream(locationSettings: locationSettings).listen(
-          (Position position) {
-            state = position;
 
-            if (activeTrip?.destination != null) {
-              distance = Geolocator.distanceBetween(
-                position.latitude,
-                position.longitude,
-                activeTrip!.destination!.latitude,
-                activeTrip!.destination!.longitude,
-              );
-            }
-
-            if (activeTrip != null) {
-              final origin = LocationPoint(
-                latitude: position.latitude,
-                longitude: position.longitude,
-                type: LocationPointType.origin,
-                name: "Current Location",
-              );
-
-              activeTrip = activeTrip!.copyWith(origin: origin);
-            }
-
-            _notify(); // important
-          },
-        );
+    _positionStream = Geolocator.getPositionStream(
+      locationSettings: locationSettings,
+    ).listen(_onLocationUpdate);
   }
 
+  void _onLocationUpdate(Position position) {
+    double? distance;
+
+    if (state.trip?.destination != null) {
+      distance = Geolocator.distanceBetween(
+        position.latitude,
+        position.longitude,
+        state.trip!.destination!.latitude,
+        state.trip!.destination!.longitude,
+      );
+    }
+
+    final origin = LocationPoint(
+      latitude: position.latitude,
+      longitude: position.longitude,
+      type: LocationPointType.origin,
+      name: "Current Location",
+    );
+
+    state = state.copyWith(
+      tracking: true,
+      currentPosition: position,
+      distance: distance,
+      trip: state.trip?.copyWith(origin: origin),
+    );
+  }
+
+  /// STOP GPS
   void stopTracking() async {
     await _positionStream?.cancel();
     _positionStream = null;
-    state = null;
+
+    state = state.copyWith(
+      tracking: false,
+      currentPosition: null,
+      clearDistance: true,
+    );
   }
 
+  /// SAVE TRIP
   void saveTrip(Trip trip) {
-    savedTrips.add(trip);
-    _notify();
+    final updatedTrips = [...state.savedTrips, trip];
+
+    state = state.copyWith(savedTrips: updatedTrips);
   }
 
+  /// START TRIP
   void startTrip(Trip trip) {
-    activeTrip = trip;
+    state = state.copyWith(trip: trip);
     startTracking();
-    _notify();
   }
 
+  /// STOP TRIP
   void stopTrip() {
-    activeTrip = null;
-    distance = null;
-    _notify();
+    stopTracking();
+
+    state = state.copyWith(clearTrip: true, clearDistance: true);
   }
 
   void clearTrips() {
-    savedTrips.clear();
+    state = state.copyWith(savedTrips: []);
   }
 
   @override

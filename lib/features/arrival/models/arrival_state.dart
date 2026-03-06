@@ -6,12 +6,14 @@ class ArrivalState {
   final Position? currentPosition;
   final Trip? trip;
   final double? distance;
+  final List<Trip> savedTrips;
 
   const ArrivalState({
     required this.tracking,
     this.currentPosition,
     this.trip,
     this.distance,
+    this.savedTrips = const [],
   });
 
   ArrivalState copyWith({
@@ -19,12 +21,16 @@ class ArrivalState {
     Position? currentPosition,
     Trip? trip,
     double? distance,
+    List<Trip>? savedTrips,
+    bool clearTrip = false,
+    bool clearDistance = false,
   }) {
     return ArrivalState(
       tracking: tracking ?? this.tracking,
       currentPosition: currentPosition ?? this.currentPosition,
-      trip: trip ?? this.trip,
-      distance: distance ?? this.distance,
+      trip: clearTrip ? null : (trip ?? this.trip),
+      distance: clearDistance ? null : (distance ?? this.distance),
+      savedTrips: savedTrips ?? this.savedTrips,
     );
   }
 }
