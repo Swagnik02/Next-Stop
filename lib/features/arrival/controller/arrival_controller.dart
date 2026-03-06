@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -14,10 +13,12 @@ class ArrivalController extends StateNotifier<Position?> {
 
   StreamSubscription<Position>? _positionStream;
 
-  void startTracking() {
+  void startTracking() async {
+    await _positionStream?.cancel();
+
     const locationSettings = LocationSettings(
       accuracy: LocationAccuracy.high,
-      distanceFilter: 5, // update every 5 meters
+      distanceFilter: 3,
     );
 
     _positionStream =
@@ -28,8 +29,10 @@ class ArrivalController extends StateNotifier<Position?> {
         );
   }
 
-  void stopTracking() {
-    _positionStream?.cancel();
+  void stopTracking() async {
+    await _positionStream?.cancel();
+    _positionStream = null;
+    state = null;
   }
 
   @override
