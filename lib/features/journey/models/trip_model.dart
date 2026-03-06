@@ -1,10 +1,10 @@
-import 'package:next_stop/features/arrival/models/location_point_model.dart';
+import 'package:next_stop/features/journey/models/waypoint_model.dart';
 
 class Trip {
   final String id;
   final String name;
-  final LocationPoint? origin;
-  final LocationPoint? destination;
+  final Waypoint? origin;
+  final Waypoint? destination;
   final double alertRadius;
 
   const Trip({
@@ -18,8 +18,8 @@ class Trip {
   Trip copyWith({
     String? id,
     String? name,
-    LocationPoint? origin,
-    LocationPoint? destination,
+    Waypoint? origin,
+    Waypoint? destination,
     double? alertRadius,
   }) {
     return Trip(

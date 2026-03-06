@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:next_stop/features/arrival/controller/arrival_controller.dart';
+import 'package:next_stop/features/journey/controller/journey_controller.dart';
 
 Card trackingBar(
   bool showLocationDetails,
   bool isTracking,
-  ArrivalController controller,
+  JourneyController controller,
   Position? position,
-  VoidCallback toggleLocationDetails, // 👈 new
+  VoidCallback toggleLocationDetails,
 ) {
   return Card(
     elevation: 2,
@@ -48,7 +48,7 @@ Card trackingBar(
                       ? Icons.keyboard_arrow_up
                       : Icons.keyboard_arrow_down,
                 ),
-                onPressed: toggleLocationDetails, // 👈 use callback
+                onPressed: toggleLocationDetails,
               ),
             ],
           ),

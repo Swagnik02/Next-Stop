@@ -2,35 +2,35 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:geolocator/geolocator.dart';
-import '../models/arrival_state.dart';
-import '../models/location_point_model.dart';
-import '../models/location_point_type_enum.dart';
-import '../models/trip_model.dart';
+import 'package:next_stop/features/journey/controller/journey_state.dart';
+import 'package:next_stop/features/journey/models/trip_model.dart';
+import 'package:next_stop/features/journey/models/waypoint_model.dart';
+import 'package:next_stop/features/journey/models/waypoint_type_enum.dart';
 
-final arrivalProvider = StateNotifierProvider<ArrivalController, ArrivalState>(
-  (ref) => ArrivalController(),
+final journeyProvider = StateNotifierProvider<JourneyController, JourneyState>(
+  (ref) => JourneyController(),
 );
 
-class ArrivalController extends StateNotifier<ArrivalState> {
-  ArrivalController()
+class JourneyController extends StateNotifier<JourneyState> {
+  JourneyController()
     : super(
-        ArrivalState(
+        JourneyState(
           tracking: false,
           savedTrips: [
             Trip(
               id: "test1",
               name: "test1",
-              origin: LocationPoint(
+              origin: Waypoint(
                 latitude: 12.8431656,
                 longitude: 77.635666,
                 name: "PG",
-                type: LocationPointType.origin,
+                type: WaypointType.origin,
               ),
-              destination: LocationPoint(
+              destination: Waypoint(
                 latitude: 12.8401781,
                 longitude: 77.6482086,
                 name: "Barbeque Nation",
-                type: LocationPointType.destination,
+                type: WaypointType.destination,
               ),
             ),
           ],
@@ -65,10 +65,10 @@ class ArrivalController extends StateNotifier<ArrivalState> {
       );
     }
 
-    final origin = LocationPoint(
+    final origin = Waypoint(
       latitude: position.latitude,
       longitude: position.longitude,
-      type: LocationPointType.origin,
+      type: WaypointType.origin,
       name: "Current Location",
     );
 
@@ -92,20 +92,20 @@ class ArrivalController extends StateNotifier<ArrivalState> {
     );
   }
 
-  /// SAVE TRIP
+  /// SAVE trip
   void saveTrip(Trip trip) {
-    final updatedTrips = [...state.savedTrips, trip];
+    final updated = [...state.savedTrips, trip];
 
-    state = state.copyWith(savedTrips: updatedTrips);
+    state = state.copyWith(savedTrips: updated);
   }
 
-  /// START TRIP
+  /// START Trip
   void startTrip(Trip trip) {
     state = state.copyWith(trip: trip);
     startTracking();
   }
 
-  /// STOP TRIP
+  /// STOP Trip
   void stopTrip() {
     stopTracking();
 

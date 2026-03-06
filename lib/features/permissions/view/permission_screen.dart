@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:next_stop/features/arrival/view/arrival_screen.dart';
+import 'package:next_stop/features/journey/view/journey_screen.dart';
 import 'package:next_stop/features/permissions/controller/permission_controller.dart';
 
 class PermissionScreen extends ConsumerWidget {
@@ -66,7 +66,7 @@ class PermissionScreen extends ConsumerWidget {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const ArrivalScreen(),
+                            builder: (_) => const JourneyScreen(),
                           ),
                         );
                       }

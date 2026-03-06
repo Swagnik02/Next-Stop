@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:next_stop/features/arrival/view/arrival_screen.dart';
+import 'package:next_stop/features/journey/view/journey_screen.dart';
 import 'package:next_stop/features/permissions/view/permission_screen.dart';
 import 'package:next_stop/features/permissions/controller/permission_controller.dart';
 
@@ -27,7 +27,7 @@ class _RootScreenState extends ConsumerState<RootScreen> {
     final permissionState = ref.watch(permissionProvider);
 
     if (permissionState.allGranted) {
-      return const ArrivalScreen();
+      return const JourneyScreen();
     }
 
     return const PermissionScreen();

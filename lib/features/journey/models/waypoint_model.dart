@@ -1,12 +1,12 @@
-import 'package:next_stop/features/arrival/models/location_point_type_enum.dart';
+import 'package:next_stop/features/journey/models/waypoint_type_enum.dart';
 
-class LocationPoint {
+class Waypoint {
   final double latitude;
   final double longitude;
   final String? name;
-  final LocationPointType type;
+  final WaypointType type;
 
-  const LocationPoint({
+  const Waypoint({
     required this.latitude,
     required this.longitude,
     required this.type,
@@ -18,6 +18,6 @@ class LocationPoint {
       return name!;
     }
 
-    return type == LocationPointType.origin ? "Origin" : "Destination";
+    return type == WaypointType.origin ? "Origin" : "Destination";
   }
 }

@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:next_stop/features/arrival/controller/arrival_controller.dart';
-import 'package:next_stop/features/arrival/models/location_point_model.dart';
-import 'package:next_stop/features/arrival/models/location_point_type_enum.dart';
-import 'package:next_stop/features/arrival/models/trip_model.dart';
-import 'package:next_stop/features/arrival/widgets/tracking_bar_widget.dart';
+import 'package:next_stop/features/journey/controller/journey_controller.dart';
+import 'package:next_stop/features/journey/models/waypoint_model.dart';
+import 'package:next_stop/features/journey/models/waypoint_type_enum.dart';
+import 'package:next_stop/features/journey/widgets/tracking_bar_widget.dart';
+import 'package:next_stop/features/journey/models/trip_model.dart';
 
-class ArrivalScreen extends ConsumerStatefulWidget {
-  const ArrivalScreen({super.key});
+class JourneyScreen extends ConsumerStatefulWidget {
+  const JourneyScreen({super.key});
 
   @override
-  ConsumerState<ArrivalScreen> createState() => _ArrivalScreenState();
+  ConsumerState<JourneyScreen> createState() => JourneyScreenState();
 }
 
-class _ArrivalScreenState extends ConsumerState<ArrivalScreen> {
+class JourneyScreenState extends ConsumerState<JourneyScreen> {
   bool showLocationDetails = false;
 
-  LocationPoint? origin;
-  LocationPoint? destination;
+  Waypoint? origin;
+  Waypoint? destination;
 
   void toggleLocationDetails() {
     setState(() {
@@ -25,15 +25,12 @@ class _ArrivalScreenState extends ConsumerState<ArrivalScreen> {
     });
   }
 
-  Future<LocationPoint?> _pickPoint(
-    BuildContext context,
-    LocationPointType type,
-  ) async {
+  Future<Waypoint?> _pickPoint(BuildContext context, WaypointType type) async {
     final latController = TextEditingController();
     final lngController = TextEditingController();
     final nameController = TextEditingController();
 
-    return showModalBottomSheet<LocationPoint>(
+    return showModalBottomSheet<Waypoint>(
       context: context,
       isScrollControlled: true,
       builder: (context) {
@@ -48,9 +45,7 @@ class _ArrivalScreenState extends ConsumerState<ArrivalScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                type == LocationPointType.origin
-                    ? "Set Origin"
-                    : "Set Destination",
+                type == WaypointType.origin ? "Set Origin" : "Set Destination",
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -88,7 +83,7 @@ class _ArrivalScreenState extends ConsumerState<ArrivalScreen> {
 
                   Navigator.pop(
                     context,
-                    LocationPoint(
+                    Waypoint(
                       latitude: lat,
                       longitude: lng,
                       type: type,
@@ -106,8 +101,8 @@ class _ArrivalScreenState extends ConsumerState<ArrivalScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(arrivalProvider);
-    final controller = ref.read(arrivalProvider.notifier);
+    final state = ref.watch(journeyProvider);
+    final controller = ref.read(journeyProvider.notifier);
 
     final position = state.currentPosition;
     final activeTrip = state.trip;
@@ -132,6 +127,7 @@ class _ArrivalScreenState extends ConsumerState<ArrivalScreen> {
 
             const SizedBox(height: 20),
 
+            /// CREATE Trip UI
             if (activeTrip == null) ...[
               Card(
                 child: ListTile(
@@ -140,7 +136,7 @@ class _ArrivalScreenState extends ConsumerState<ArrivalScreen> {
                   onTap: () async {
                     final point = await _pickPoint(
                       context,
-                      LocationPointType.origin,
+                      WaypointType.origin,
                     );
                     if (point != null) {
                       setState(() => origin = point);
@@ -156,7 +152,7 @@ class _ArrivalScreenState extends ConsumerState<ArrivalScreen> {
                   onTap: () async {
                     final point = await _pickPoint(
                       context,
-                      LocationPointType.destination,
+                      WaypointType.destination,
                     );
                     if (point != null) {
                       setState(() => destination = point);
@@ -207,7 +203,9 @@ class _ArrivalScreenState extends ConsumerState<ArrivalScreen> {
                   ),
                 ],
               ),
-            ] else ...[
+            ]
+            /// ACTIVE Trip UI
+            else ...[
               Container(
                 height: 220,
                 width: 220,
@@ -247,6 +245,7 @@ class _ArrivalScreenState extends ConsumerState<ArrivalScreen> {
 
             const SizedBox(height: 20),
 
+            /// SAVED TripS LIST
             Expanded(
               child: ListView.builder(
                 itemCount: savedTrips.length,
