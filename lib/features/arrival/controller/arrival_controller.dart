@@ -1,17 +1,40 @@
-import 'package:flutter_riverpod/legacy.dart';
+import 'dart:async';
 
-final arrivalProvider = StateNotifierProvider<ArrivalController, bool>((ref) {
+import 'package:flutter_riverpod/legacy.dart';
+import 'package:geolocator/geolocator.dart';
+
+final arrivalProvider = StateNotifierProvider<ArrivalController, Position?>((
+  ref,
+) {
   return ArrivalController();
 });
 
-class ArrivalController extends StateNotifier<bool> {
-  ArrivalController() : super(false);
+class ArrivalController extends StateNotifier<Position?> {
+  ArrivalController() : super(null);
+
+  StreamSubscription<Position>? _positionStream;
 
   void startTracking() {
-    state = true;
+    const locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 5, // update every 5 meters
+    );
+
+    _positionStream =
+        Geolocator.getPositionStream(locationSettings: locationSettings).listen(
+          (Position position) {
+            state = position;
+          },
+        );
   }
 
   void stopTracking() {
-    state = false;
+    _positionStream?.cancel();
+  }
+
+  @override
+  void dispose() {
+    _positionStream?.cancel();
+    super.dispose();
   }
 }
