@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import '../models/waypoint_model.dart';
 import '../models/waypoint_type_enum.dart';
 
 Future<Waypoint?> showWaypointPicker(
   BuildContext context,
   WaypointType type,
+  Position? currentPosition,
 ) async {
   final latController = TextEditingController();
   final lngController = TextEditingController();
@@ -28,6 +30,23 @@ Future<Waypoint?> showWaypointPicker(
               type == WaypointType.origin ? "Set Origin" : "Set Destination",
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
+
+            const SizedBox(height: 20),
+
+            /// USE CURRENT LOCATION BUTTON
+            if (currentPosition != null)
+              ElevatedButton.icon(
+                icon: const Icon(Icons.my_location),
+                label: const Text("Use Current Location"),
+                onPressed: () {
+                  latController.text = currentPosition.latitude.toString();
+                  lngController.text = currentPosition.longitude.toString();
+
+                  if (nameController.text.isEmpty) {
+                    nameController.text = "Current Location";
+                  }
+                },
+              ),
 
             const SizedBox(height: 20),
 

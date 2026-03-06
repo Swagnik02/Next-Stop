@@ -39,7 +39,16 @@ class JourneyController extends StateNotifier<JourneyState> {
 
   StreamSubscription<Position>? _positionStream;
 
-  /// START GPS
+  /// FETCH CURRENT LOCATION ONCE
+  Future<void> fetchCurrentLocation() async {
+    final position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    state = state.copyWith(currentPosition: position);
+  }
+
+  /// START GPS TRACKING
   void startTracking() async {
     await _positionStream?.cancel();
 
@@ -95,17 +104,16 @@ class JourneyController extends StateNotifier<JourneyState> {
   /// SAVE trip
   void saveTrip(Trip trip) {
     final updated = [...state.savedTrips, trip];
-
     state = state.copyWith(savedTrips: updated);
   }
 
-  /// START Trip
+  /// START trip
   void startTrip(Trip trip) {
     state = state.copyWith(trip: trip);
     startTracking();
   }
 
-  /// STOP Trip
+  /// STOP trip
   void stopTrip() {
     stopTracking();
 

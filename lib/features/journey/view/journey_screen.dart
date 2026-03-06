@@ -7,7 +7,6 @@ import 'package:next_stop/features/journey/models/waypoint_type_enum.dart';
 import 'package:next_stop/features/journey/utils/waypoint_picker.dart';
 import 'package:next_stop/features/journey/widgets/active_trip_card.dart';
 import 'package:next_stop/features/journey/widgets/saved_trips_list.dart';
-import 'package:next_stop/features/journey/widgets/tracking_bar_widget.dart';
 import 'package:next_stop/features/journey/widgets/trip_builder_card.dart';
 
 class JourneyScreen extends ConsumerStatefulWidget {
@@ -22,6 +21,15 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
 
   Waypoint? origin;
   Waypoint? destination;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      ref.read(journeyProvider.notifier).fetchCurrentLocation();
+    });
+  }
 
   void toggleLocationDetails() {
     setState(() {
@@ -48,7 +56,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
     final distance = state.distance;
     final savedTrips = state.savedTrips;
 
-    final isTracking = position != null;
+    // final isTracking = position != null;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Next Stop"), centerTitle: true),
@@ -56,14 +64,13 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            trackingBar(
-              showLocationDetails,
-              isTracking,
-              controller,
-              position,
-              toggleLocationDetails,
-            ),
-
+            // trackingBar(
+            //   showLocationDetails,
+            //   isTracking,
+            //   controller,
+            //   position,
+            //   toggleLocationDetails,
+            // ),
             const SizedBox(height: 20),
 
             activeTrip == null
@@ -74,6 +81,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                       final point = await showWaypointPicker(
                         context,
                         WaypointType.origin,
+                        state.currentPosition,
                       );
                       if (point != null) setState(() => origin = point);
                     },
@@ -81,6 +89,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                       final point = await showWaypointPicker(
                         context,
                         WaypointType.destination,
+                        state.currentPosition,
                       );
                       if (point != null) setState(() => destination = point);
                     },
