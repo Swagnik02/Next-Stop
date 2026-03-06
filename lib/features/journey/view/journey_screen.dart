@@ -73,6 +73,28 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
             // ),
             const SizedBox(height: 20),
 
+            /// LOCATION STATUS
+            if (currentLocation == null)
+              const Padding(
+                padding: EdgeInsets.only(bottom: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      "📍 Finding your current location...\nSetting things up before your journey begins.",
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+
+            /// TRIP BUILDER OR ACTIVE TRIP
             activeTrip == null
                 ? TripBuilderCard(
                     origin: origin,
@@ -98,7 +120,6 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                             buildTrip("Trip ${savedTrips.length + 1}"),
                           )
                         : null,
-
                     onStart: origin != null && destination != null
                         ? () => controller.startTrip(buildTrip("Active Trip"))
                         : null,
@@ -111,6 +132,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
 
             const SizedBox(height: 20),
 
+            /// SAVED TRIPS ALWAYS AVAILABLE
             SavedTripsList(trips: savedTrips, onStart: controller.startTrip),
           ],
         ),
