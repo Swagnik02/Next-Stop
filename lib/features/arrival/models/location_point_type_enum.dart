@@ -1,0 +1,1 @@
+enum LocationPointType { origin, destination }
