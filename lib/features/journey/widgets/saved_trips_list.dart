@@ -4,8 +4,14 @@ import '../models/trip_model.dart';
 class SavedTripsList extends StatelessWidget {
   final List<Trip> trips;
   final Function(Trip) onStart;
+  final Function(Trip) onSelect;
 
-  const SavedTripsList({super.key, required this.trips, required this.onStart});
+  const SavedTripsList({
+    super.key,
+    required this.trips,
+    required this.onStart,
+    required this.onSelect,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +31,7 @@ class SavedTripsList extends StatelessWidget {
                 icon: const Icon(Icons.play_arrow),
                 onPressed: () => onStart(trip),
               ),
+              onTap: () => onSelect(trip),
             ),
           );
         },

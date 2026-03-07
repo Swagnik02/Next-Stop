@@ -65,6 +65,10 @@ class JourneyController extends StateNotifier<JourneyState> {
     state = state.copyWith(currentLocation: location);
   }
 
+  void loadTripIntoBuilder(Trip trip) {
+    state = state.copyWith(trip: null);
+  }
+
   /// START TRACKING
   void startTracking() async {
     await _locationStream?.cancel();
@@ -125,7 +129,7 @@ class JourneyController extends StateNotifier<JourneyState> {
   void stopTrip() {
     stopTracking();
 
-    state = state.copyWith(clearTrip: true, clearDistance: true);
+    state = state.copyWith(trip: null, clearTrip: true, clearDistance: true);
   }
 
   void clearTrips() {

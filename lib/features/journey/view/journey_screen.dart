@@ -135,7 +135,16 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
             const SizedBox(height: 20),
 
             /// SAVED TRIPS ALWAYS AVAILABLE
-            SavedTripsList(trips: savedTrips, onStart: controller.startTrip),
+            SavedTripsList(
+              trips: savedTrips,
+              onStart: controller.startTrip,
+              onSelect: (trip) {
+                setState(() {
+                  origin = trip.origin;
+                  destination = trip.destination;
+                });
+              },
+            ),
           ],
         ),
       ),
