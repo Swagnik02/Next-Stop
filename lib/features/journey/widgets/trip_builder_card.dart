@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/waypoint_model.dart';
+import 'package:next_stop/core/widgets/action_card.dart';
+import 'package:next_stop/features/journey/models/waypoint_model.dart';
 
 class TripBuilderCard extends StatelessWidget {
   final Waypoint? origin;
@@ -23,20 +24,16 @@ class TripBuilderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Card(
-          child: ListTile(
-            title: Text(origin?.displayName ?? "Set Origin"),
-            leading: const Icon(Icons.my_location),
-            onTap: onOriginTap,
-          ),
+        ActionCard(
+          leading: const Icon(Icons.trip_origin),
+          title: Text(origin?.displayName ?? "Set Origin"),
+          onTap: onOriginTap,
         ),
 
-        Card(
-          child: ListTile(
-            title: Text(destination?.displayName ?? "Set Destination"),
-            leading: const Icon(Icons.place),
-            onTap: onDestinationTap,
-          ),
+        ActionCard(
+          leading: const Icon(Icons.place),
+          title: Text(destination?.displayName ?? "Set Destination"),
+          onTap: onDestinationTap,
         ),
 
         const SizedBox(height: 10),
