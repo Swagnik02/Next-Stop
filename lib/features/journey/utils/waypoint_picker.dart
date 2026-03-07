@@ -12,83 +12,126 @@ Future<Waypoint?> showWaypointPicker(
   final lngController = TextEditingController();
   final nameController = TextEditingController();
 
-  return showModalBottomSheet<Waypoint>(
+  return showDialog<Waypoint>(
     context: context,
-    isScrollControlled: true,
     builder: (context) {
-      return Padding(
-        padding: EdgeInsets.fromLTRB(
-          20,
-          20,
-          20,
-          MediaQuery.of(context).viewInsets.bottom + 20,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              type == WaypointType.origin ? "Set Origin" : "Set Destination",
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+      return Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                /// TITLE
+                Row(
+                  children: [
+                    Icon(
+                      type == WaypointType.origin
+                          ? Icons.trip_origin
+                          : Icons.flag,
+                      color: Colors.teal,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      type == WaypointType.origin
+                          ? "Set Origin"
+                          : "Set Destination",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
 
-            const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-            /// USE CURRENT LOCATION BUTTON
-            if (currentLocation != null)
-              ElevatedButton.icon(
-                icon: const Icon(Icons.my_location),
-                label: const Text("Use Current Location"),
-                onPressed: () {
-                  latController.text = currentLocation.latitude.toString();
-                  lngController.text = currentLocation.longitude.toString();
+                /// GPS BUTTON
+                if (currentLocation != null)
+                  OutlinedButton.icon(
+                    icon: const Icon(Icons.gps_fixed),
+                    label: const Text("Use Current Location"),
+                    onPressed: () {
+                      latController.text = currentLocation.latitude.toString();
+                      lngController.text = currentLocation.longitude.toString();
 
-                  if (nameController.text.isEmpty) {
-                    nameController.text = "Current Location";
-                  }
-                },
-              ),
-
-            const SizedBox(height: 20),
-
-            TextField(
-              controller: latController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: "Latitude"),
-            ),
-
-            TextField(
-              controller: lngController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: "Longitude"),
-            ),
-
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: "Name"),
-            ),
-
-            const SizedBox(height: 20),
-
-            ElevatedButton(
-              onPressed: () {
-                final lat = double.tryParse(latController.text);
-                final lng = double.tryParse(lngController.text);
-
-                if (lat == null || lng == null) return;
-
-                Navigator.pop(
-                  context,
-                  Waypoint(
-                    latitude: lat,
-                    longitude: lng,
-                    type: type,
-                    name: nameController.text,
+                      if (nameController.text.isEmpty) {
+                        nameController.text = "Current Location";
+                      }
+                    },
                   ),
-                );
-              },
-              child: const Text("Save"),
+
+                const SizedBox(height: 20),
+
+                /// LATITUDE
+                TextField(
+                  controller: latController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    labelText: "Latitude",
+                    prefixIcon: Icon(Icons.north),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                /// LONGITUDE
+                TextField(
+                  controller: lngController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    labelText: "Longitude",
+                    prefixIcon: Icon(Icons.east),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                /// NAME
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    labelText: "Location Name",
+                    prefixIcon: Icon(Icons.location_on),
+                  ),
+                ),
+
+                const SizedBox(height: 25),
+
+                /// ACTION BUTTONS
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("Cancel"),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        final lat = double.tryParse(latController.text);
+                        final lng = double.tryParse(lngController.text);
+
+                        if (lat == null || lng == null) return;
+
+                        Navigator.pop(
+                          context,
+                          Waypoint(
+                            latitude: lat,
+                            longitude: lng,
+                            type: type,
+                            name: nameController.text,
+                          ),
+                        );
+                      },
+                      child: const Text("Save"),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       );
     },
