@@ -7,10 +7,19 @@ Future<Waypoint?> showWaypointPicker(
   BuildContext context,
   WaypointType type,
   LocationData? currentLocation,
+  Waypoint? existingWaypoint,
 ) async {
-  final latController = TextEditingController();
-  final lngController = TextEditingController();
-  final nameController = TextEditingController();
+  final latController = TextEditingController(
+    text: existingWaypoint?.latitude.toString() ?? "",
+  );
+
+  final lngController = TextEditingController(
+    text: existingWaypoint?.longitude.toString() ?? "",
+  );
+
+  final nameController = TextEditingController(
+    text: existingWaypoint?.name ?? "",
+  );
 
   return showDialog<Waypoint>(
     context: context,

@@ -104,6 +104,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                         context,
                         WaypointType.origin,
                         currentLocation,
+                        origin,
                       );
                       if (point != null) setState(() => origin = point);
                     },
@@ -112,6 +113,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                         context,
                         WaypointType.destination,
                         currentLocation,
+                        destination,
                       );
                       if (point != null) setState(() => destination = point);
                     },
