@@ -65,7 +65,6 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            TestMapsParser(),
             // trackingBar(
             //   showLocationDetails,
             //   isTracking,
@@ -73,6 +72,14 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
             //   currentLocation,
             //   toggleLocationDetails,
             // ),
+            TestMapsParser(
+              onTripParsed: (trip) {
+                setState(() {
+                  origin = trip.origin;
+                  destination = trip.destination;
+                });
+              },
+            ),
             const SizedBox(height: 20),
 
             /// LOCATION STATUS
