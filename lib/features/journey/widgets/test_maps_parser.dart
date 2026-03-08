@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:next_stop/core/utils/maps_coordinate_parser.dart';
 import 'package:next_stop/core/utils/maps_link_resolver.dart';
 
@@ -14,36 +15,60 @@ class _TestMapsParserState extends State<TestMapsParser> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextField(
-          controller: urlController,
-          decoration: const InputDecoration(
-            labelText: "Paste Google Maps URL",
-            border: OutlineInputBorder(),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Row(
+        children: [
+          /// TEXT FIELD
+          Expanded(
+            child: TextField(
+              controller: urlController,
+              textAlignVertical: TextAlignVertical.center,
+              decoration: const InputDecoration(
+                hintText: "Paste Google Maps link",
+                border: InputBorder.none,
+                prefixIcon: Icon(Icons.map_outlined),
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(vertical: 12),
+              ),
+            ),
           ),
-        ),
 
-        const SizedBox(height: 20),
+          /// PASTE BUTTON
+          IconButton(
+            tooltip: "Paste",
+            icon: const Icon(Icons.paste_outlined),
+            onPressed: () async {
+              final data = await Clipboard.getData('text/plain');
+              urlController.text = data?.text ?? '';
+            },
+          ),
 
-        MaterialButton(
-          color: Colors.teal,
-          child: const Text("Parse Trip"),
-          onPressed: () async {
-            final url = urlController.text.trim();
+          /// PARSE BUTTON
+          IconButton(
+            tooltip: "Parse",
+            icon: const Icon(Icons.link),
+            color: Colors.teal,
+            onPressed: () async {
+              final url = urlController.text.trim();
 
-            if (url.isEmpty) return;
+              if (url.isEmpty) return;
 
-            String? resolvedUrl = await getResolvedMapsUrl(url);
-            print(resolvedUrl);
-            if (resolvedUrl != null) {
-              final trip = extractTripFromMapsUrl(resolvedUrl);
+              String? resolvedUrl = await getResolvedMapsUrl(url);
 
-              print(trip.toString());
-            }
-          },
-        ),
-      ],
+              if (resolvedUrl != null) {
+                final trip = extractTripFromMapsUrl(resolvedUrl);
+                print(trip);
+              }
+            },
+          ),
+        ],
+      ),
     );
   }
 }
