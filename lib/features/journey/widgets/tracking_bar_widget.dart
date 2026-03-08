@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:next_stop/core/models/location_data.dart';
 import 'package:next_stop/features/journey/controller/journey_controller.dart';
 
 Card trackingBar(
   bool showLocationDetails,
   bool isTracking,
   JourneyController controller,
-  Position? position,
+  LocationData? locationData,
   VoidCallback toggleLocationDetails,
 ) {
   return Card(
@@ -54,7 +54,7 @@ Card trackingBar(
           ),
         ),
 
-        if (showLocationDetails && position != null)
+        if (showLocationDetails && locationData != null)
           Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -69,43 +69,43 @@ Card trackingBar(
                 _infoTile(
                   icon: Icons.my_location,
                   title: "Latitude",
-                  value: position.latitude.toString(),
+                  value: locationData.latitude.toString(),
                 ),
 
                 _infoTile(
                   icon: Icons.place,
                   title: "Longitude",
-                  value: position.longitude.toString(),
+                  value: locationData.longitude.toString(),
                 ),
 
                 _infoTile(
                   icon: Icons.speed,
                   title: "Speed",
-                  value: "${position.speed.toStringAsFixed(2)} m/s",
+                  value: "${locationData.speed.toStringAsFixed(2)} m/s",
                 ),
 
                 _infoTile(
                   icon: Icons.gps_fixed,
                   title: "Accuracy",
-                  value: "${position.accuracy.toStringAsFixed(2)} m",
+                  value: "${locationData.accuracy.toStringAsFixed(2)} m",
                 ),
 
                 _infoTile(
                   icon: Icons.terrain,
                   title: "Altitude",
-                  value: "${position.altitude.toStringAsFixed(2)} m",
+                  value: "${locationData.altitude.toStringAsFixed(2)} m",
                 ),
 
                 _infoTile(
                   icon: Icons.explore,
                   title: "Heading",
-                  value: position.heading.toStringAsFixed(2),
+                  value: locationData.heading.toStringAsFixed(2),
                 ),
               ],
             ),
           ),
 
-        if (showLocationDetails && position == null)
+        if (showLocationDetails && locationData == null)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 10),
             child: Text("Location not available yet"),

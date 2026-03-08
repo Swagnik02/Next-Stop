@@ -20,4 +20,9 @@ class Waypoint {
 
     return type == WaypointType.origin ? "Origin" : "Destination";
   }
+
+  @override
+  String toString() {
+    return 'Waypoint(type: $type, lat: $latitude, lng: $longitude, name: $name)';
+  }
 }

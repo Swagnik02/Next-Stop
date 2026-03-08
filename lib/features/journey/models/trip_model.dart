@@ -30,4 +30,17 @@ class Trip {
       alertRadius: alertRadius ?? this.alertRadius,
     );
   }
+
+  @override
+  String toString() {
+    return '''
+Trip(
+  id: $id,
+  name: $name,
+  origin: ${origin != null ? origin.toString() : 'null'},
+  destination: ${destination != null ? destination.toString() : 'null'},
+  alertRadius: $alertRadius
+)
+''';
+  }
 }
