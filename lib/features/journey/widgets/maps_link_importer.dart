@@ -4,16 +4,16 @@ import 'package:next_stop/core/utils/maps_coordinate_parser.dart';
 import 'package:next_stop/core/utils/maps_link_resolver.dart';
 import 'package:next_stop/features/journey/models/trip_model.dart';
 
-class TestMapsParser extends StatefulWidget {
+class MapsLinkImporter extends StatefulWidget {
   final Function(Trip trip) onTripParsed;
 
-  const TestMapsParser({super.key, required this.onTripParsed});
+  const MapsLinkImporter({super.key, required this.onTripParsed});
 
   @override
-  State<TestMapsParser> createState() => _TestMapsParserState();
+  State<MapsLinkImporter> createState() => _MapsLinkImporterState();
 }
 
-class _TestMapsParserState extends State<TestMapsParser> {
+class _MapsLinkImporterState extends State<MapsLinkImporter> {
   final TextEditingController urlController = TextEditingController();
 
   Future<void> _parseUrl() async {

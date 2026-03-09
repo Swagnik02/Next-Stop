@@ -7,7 +7,7 @@ import 'package:next_stop/features/journey/models/waypoint_type_enum.dart';
 import 'package:next_stop/features/journey/utils/waypoint_picker.dart';
 import 'package:next_stop/features/journey/widgets/active_trip_card.dart';
 import 'package:next_stop/features/journey/widgets/saved_trips_list.dart';
-import 'package:next_stop/features/journey/widgets/test_maps_parser.dart';
+import 'package:next_stop/features/journey/widgets/maps_link_importer.dart';
 import 'package:next_stop/features/journey/widgets/trip_builder_card.dart';
 
 class JourneyScreen extends ConsumerStatefulWidget {
@@ -72,7 +72,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
             //   currentLocation,
             //   toggleLocationDetails,
             // ),
-            TestMapsParser(
+            MapsLinkImporter(
               onTripParsed: (trip) {
                 setState(() {
                   origin = trip.origin;
