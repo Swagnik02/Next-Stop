@@ -6,18 +6,23 @@ import 'package:next_stop/features/journey/models/trip_model.dart';
 
 class MapsLinkImporter extends StatefulWidget {
   final Function(Trip trip) onTripParsed;
+  final TextEditingController urlController;
 
-  const MapsLinkImporter({super.key, required this.onTripParsed});
+  const MapsLinkImporter({
+    super.key,
+    required this.onTripParsed,
+    required this.urlController,
+  });
 
   @override
   State<MapsLinkImporter> createState() => _MapsLinkImporterState();
 }
 
 class _MapsLinkImporterState extends State<MapsLinkImporter> {
-  final TextEditingController urlController = TextEditingController();
+  // final TextEditingController urlController = TextEditingController();
 
   Future<void> _parseUrl() async {
-    final url = urlController.text.trim();
+    final url = widget.urlController.text.trim();
 
     if (url.isEmpty) return;
 
@@ -28,7 +33,7 @@ class _MapsLinkImporterState extends State<MapsLinkImporter> {
       final trip = extractTripFromMapsUrl(resolvedUrl);
 
       widget.onTripParsed(trip);
-      urlController.clear();
+      widget.urlController.clear();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -54,9 +59,9 @@ class _MapsLinkImporterState extends State<MapsLinkImporter> {
           /// TEXT FIELD
           Expanded(
             child: TextField(
-              controller: urlController,
+              controller: widget.urlController,
               textAlignVertical: TextAlignVertical.center,
-              onSubmitted: (_) => _parseUrl(),
+              // onSubmitted: (_) => _parseUrl(),
               decoration: const InputDecoration(
                 hintText: "Paste Google Maps link",
                 border: InputBorder.none,
@@ -75,7 +80,7 @@ class _MapsLinkImporterState extends State<MapsLinkImporter> {
               final data = await Clipboard.getData('text/plain');
               final text = data?.text ?? '';
 
-              urlController.text = text;
+              widget.urlController.text = text;
 
               if (text.contains("maps")) {
                 _parseUrl();

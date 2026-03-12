@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:next_stop/core/services/share_intent_service.dart';
+import 'package:next_stop/core/utils/maps_coordinate_parser.dart';
+import 'package:next_stop/core/utils/maps_link_resolver.dart';
 import 'package:next_stop/features/journey/controller/journey_controller.dart';
 import 'package:next_stop/features/journey/models/trip_model.dart';
 import 'package:next_stop/features/journey/models/waypoint_model.dart';
@@ -23,9 +26,32 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
   Waypoint? origin;
   Waypoint? destination;
 
+  final TextEditingController mapsLinkController = TextEditingController();
+  late ShareIntentService _shareService;
+
   @override
   void initState() {
     super.initState();
+
+    _shareService = ShareIntentService();
+
+    _shareService.startListening((sharedText) async {
+      mapsLinkController.text = sharedText;
+      final resolvedUrl = await getResolvedMapsUrl(sharedText);
+
+      if (resolvedUrl == null) return;
+
+      final trip = extractTripFromMapsUrl(resolvedUrl);
+
+      setState(() {
+        origin = trip.origin;
+        destination = trip.destination;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Route imported from Google Maps")),
+      );
+    });
 
     Future.microtask(() {
       ref.read(journeyProvider.notifier).fetchCurrentLocation();
@@ -79,6 +105,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                   destination = trip.destination;
                 });
               },
+              urlController: mapsLinkController,
             ),
             const SizedBox(height: 20),
 
