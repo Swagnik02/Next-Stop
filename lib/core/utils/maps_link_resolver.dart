@@ -6,7 +6,7 @@ String? extractUrl(String text) {
   return match?.group(0);
 }
 
-/// Expand Google Maps short links
+/// Expand Google Maps short links (robust)
 Future<String> resolveGoogleMapsLink(String url) async {
   Uri current = Uri.parse(url);
   final client = http.Client();
@@ -20,13 +20,43 @@ Future<String> resolveGoogleMapsLink(String url) async {
 
       final response = await client.send(request);
 
-      final location = response.headers['location'];
+      /// HTTP redirects
+      if ([301, 302, 307, 308].contains(response.statusCode)) {
+        final location = response.headers['location'];
 
-      if (location == null) {
+        if (location == null) break;
+
+        current = Uri.parse(location);
+        continue;
+      }
+
+      /// Some pages return 200 but redirect via HTML
+      if (response.statusCode == 200) {
+        final body = await response.stream.bytesToString();
+
+        /// Meta refresh redirect
+        final metaMatch = RegExp(
+          r"url=([^'>\s]+)",
+          caseSensitive: false,
+        ).firstMatch(body);
+
+        if (metaMatch != null) {
+          return metaMatch.group(1)!;
+        }
+
+        /// JS redirect
+        final jsMatch = RegExp(
+          r"window\.location\.href\s*=\s*[\']([^\']+)[\']",
+        ).firstMatch(body);
+
+        if (jsMatch != null) {
+          return jsMatch.group(1)!;
+        }
+
         return current.toString();
       }
 
-      current = Uri.parse(location);
+      return current.toString();
     }
   } catch (_) {
     return url;
@@ -43,7 +73,11 @@ Future<String?> getResolvedMapsUrl(String sharedText) async {
 
   if (extracted == null) return null;
 
-  if (extracted.contains("maps.app.goo.gl")) {
+  /// Handle all possible shorteners
+  if (extracted.contains("maps.app.goo.gl") ||
+      extracted.contains("goo.gl/maps") ||
+      extracted.contains("t.co") ||
+      extracted.contains("bit.ly")) {
     return await resolveGoogleMapsLink(extracted);
   }
 

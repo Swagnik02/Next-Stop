@@ -22,6 +22,7 @@ class _MapsLinkImporterState extends State<MapsLinkImporter> {
     if (url.isEmpty) return;
 
     String? resolvedUrl = await getResolvedMapsUrl(url);
+    print(resolvedUrl);
 
     if (resolvedUrl != null) {
       final trip = extractTripFromMapsUrl(resolvedUrl);
